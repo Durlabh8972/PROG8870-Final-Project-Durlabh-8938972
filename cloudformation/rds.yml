@@ -18,14 +18,14 @@ Resources:
     Properties:
       DBSubnetGroupDescription: Subnet group for prog8870 RDS
       SubnetIds:
-        - subnet-08a8cba4e8a28a5d2  # replace with real subnet ids when launching via console
-        - subnet-0e6f423767d0973a8  # replace with real subnet ids when launching via console
+        - subnet-08a8cba4e8a28a5d2  
+        - subnet-0e6f423767d0973a8 
 
   RdsSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Allow MySQL
-      VpcId: vpc-0ccceea34a4602863  # replace with your VPC ID
+      VpcId: vpc-0ccceea34a4602863  
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 3306
