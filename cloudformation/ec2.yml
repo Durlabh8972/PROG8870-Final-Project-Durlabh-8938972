@@ -4,13 +4,13 @@ Description: 'EC2 instance inside existing VPC with existing IGW and route table
 Parameters:
   KeyName:
     Type: String
-    Default: 'my-keypair'   # Updated with your existing key pair
+    Default: 'my-keypair'   
   InstanceType:
     Type: String
     Default: 't3.micro'
   AmiId:
     Type: String
-    Default: 'ami-0c94855ba95c71c99' # replace as needed
+    Default: 'ami-0c94855ba95c71c99' 
 
 Resources:
   PublicSubnet:
