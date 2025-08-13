@@ -1,0 +1,68 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'EC2 instance inside existing VPC with existing IGW and route table'
+
+Parameters:
+  KeyName:
+    Type: String
+    Default: 'my-keypair'   # Updated with your existing key pair
+  InstanceType:
+    Type: String
+    Default: 't3.micro'
+  AmiId:
+    Type: String
+    Default: 'ami-0c94855ba95c71c99' # replace as needed
+
+Resources:
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: vpc-0e9b1512d385da10d
+      CidrBlock: 10.0.3.0/24
+      MapPublicIpOnLaunch: true
+
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: vpc-0e9b1512d385da10d
+
+  Route:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: igw-0cd3422533a51fe4e
+
+  SubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref RouteTable
+
+  InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow SSH
+      VpcId: vpc-0e9b1512d385da10d
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      ImageId: !Ref AmiId
+      SubnetId: !Ref PublicSubnet
+      SecurityGroupIds:
+        - !Ref InstanceSecurityGroup
+      Tags:
+        - Key: Name
+          Value: prog8870-cf-ec2
+
+Outputs:
+  PublicIP:
+    Description: Public IP of deployed EC2
+    Value: !GetAtt EC2Instance.PublicIp

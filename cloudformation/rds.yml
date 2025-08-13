@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'RDS MySQL instance (public for project only)'
+
+Parameters:
+  DBUsername:
+    Type: String
+    Default: adminuser
+  DBPassword:
+    Type: String
+    Default: ChangeMe123!
+  DBName:
+    Type: String
+    Default: prog8870db
+
+Resources:
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnet group for prog8870 RDS
+      SubnetIds:
+        - subnet-08a8cba4e8a28a5d2  # replace with real subnet ids when launching via console
+        - subnet-0e6f423767d0973a8  # replace with real subnet ids when launching via console
+
+  RdsSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow MySQL
+      VpcId: vpc-0ccceea34a4602863  # replace with your VPC ID
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          CidrIp: 0.0.0.0/0
+
+  MyDB:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: !Ref DBUsername
+      MasterUserPassword: !Ref DBPassword
+      DBName: !Ref DBName
+      PubliclyAccessible: true
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      VPCSecurityGroups:
+        - !Ref RdsSecurityGroup
+
+Outputs:
+  Endpoint:
+    Value: !GetAtt MyDB.Endpoint.Address
+    Description: 'RDS endpoint'
